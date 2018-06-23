@@ -1,6 +1,7 @@
 ## An in-house Command Line Interface to process tag-based scRNA-Seq data.
 
-### Installation
+### Installation  
+download this package and unzip it.
 `$cd path-to-smartliu`   
 `$pip install --editable .`
 
