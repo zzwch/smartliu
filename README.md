@@ -1,11 +1,9 @@
 ## An in-house Command Line Interface to process tag-based scRNA-Seq data.
 
 ### Installation  
-download this package and unzip it.
+download this package and unzip it.   
 `$cd path-to-smartliu`   
-`$pip install --editable .`
-
-or `$pip install `
+`$pip install --editable .`   
 ### Prerequisite
 1. some common genome analysis tools, Including but no limited to: `hisat2`, `samtools`, `htseq-count`, `bamtools`, `bam2fastx`, `R`,`multiqc`. see [tools] section in configs/mm10.config file to find more information.   
 
