@@ -6,6 +6,7 @@ setup(
     py_modules=['smartliu'],
     install_requires=[
         'Click',
+        'biopython',
     ],
     entry_points='''
         [console_scripts]
