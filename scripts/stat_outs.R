@@ -46,15 +46,23 @@ stat_split$match.ratio <- apply(stat_split, 1, function(x){
 
 stat_split$pool.magnitudes <- apply(stat_split, 1, function(x){
   tmp <- barcodes_split[barcodes_split$Sample == x["Sample"] & barcodes_split$Match == "matched", "split"]
-  mixmdl <- normalmixEM(log10(tmp+1), k = 2)
-  ind_valid <- which(mixmdl$posterior[,which.max(mixmdl$mu)] > 0.6)
-  mean(log10(tmp[ind_valid]+1))
+  try_ret <- try(mixmdl <- normalmixEM(log10(tmp+1), k = 2))
+  if(class(try_ret) == "try-error"){
+    return(mean(log10(tmp+1)))
+  }else{
+    ind_valid <- which(mixmdl$posterior[,which.max(mixmdl$mu)] > 0.6)
+    mean(log10(tmp[ind_valid]+1))
+  }
 })
 stat_split$pool.variance <- apply(stat_split, 1, function(x){
   tmp <- barcodes_split[barcodes_split$Sample == x["Sample"] & barcodes_split$Match == "matched", "split"]
-  mixmdl <- normalmixEM(log10(tmp+1), k = 2)
-  ind_valid <- which(mixmdl$posterior[,which.max(mixmdl$mu)] > 0.6)
-  var(log10(tmp[ind_valid]+1))
+  try_ret <- try(mixmdl <- normalmixEM(log10(tmp+1), k = 2))
+  if(class(try_ret) == "try-error"){
+    return(var(log10(tmp+1)))
+  }else{
+    ind_valid <- which(mixmdl$posterior[,which.max(mixmdl$mu)] > 0.6)
+    var(log10(tmp[ind_valid]+1))
+  }
 })
 
 # plot barcode counts
@@ -142,7 +150,7 @@ write.table(stat_barcodes, file = file.path(outs_dir, "outs_barcodes.xls"), sep 
 m_files <- list.files(path = summary_dir, pattern = "^stat_mapping_to_")
 m_refs <- gsub(pattern = "^stat_mapping_to_|\\.(re)?(count|mapping).*|\\.txt","",m_files, perl = T)
 for(i in sort(unique(m_refs))){
-  ref_stat <- NULL
+  ref_stat <- list()
   ref_mapping_file <- paste0("stat_mapping_to_", i, ".txt")
   
   ref_quantify_files <- setdiff(m_files[m_refs == i], ref_mapping_file)
@@ -199,14 +207,22 @@ for(i in sort(unique(m_refs))){
     ###########
     colnames(ref_gtf_stat) <- paste0(i,"|",j,"|", colnames(ref_gtf_stat))
     
-    samples <- c(rownames(ref_stat), rownames(ref_gtf_stat))
-    annots <- c(colnames(ref_stat), colnames(ref_gtf_stat))
-    ref_stat <- as.data.frame(matrix(NA, length(samples), length(annots), dimnames = list(samples, annots)))
-    ref_stat[rownames(ref_stat), colnames(ref_stat)] <- ref_stat
-    ref_stat[rownames(ref_gtf_stat), colnames(ref_gtf_stat)] <- ref_gtf_stat
-    
-    
+    ref_stat[[j]] <- ref_gtf_stat
   }
+  
+  samples <- NULL
+  annots <- NULL
+  for(k in names(ref_stat)){
+    samples <- sort(unique(c(samples, rownames(ref_stat[[k]]))))
+    annots <- c(annots, colnames(ref_stat[[k]]))
+  }
+  ref_stat_tmp <- as.data.frame(matrix(NA, length(samples), length(annots), dimnames = list(samples, annots)))
+  for(k in names(ref_stat)){
+    ref_stat_tmp[rownames(ref_stat[[k]]), colnames(ref_stat[[k]])] <- ref_stat[[k]]
+  }
+  
+  ref_stat <- ref_stat_tmp
+  
   ref_mapping <- as.data.frame(read.delim(file.path(summary_dir,ref_mapping_file), header = T, check.names = F))
   colnames(ref_mapping) <- paste0(i,"|",tolower(colnames(ref_mapping)))
   ref_stat <- cbind(ref_stat, ref_mapping)

@@ -1,0 +1,67 @@
+This is cutadapt 1.16 with Python 3.4.8
+Command line parameters: -j 1 -a AGATCGGAAGAGC -a GCTCTTCCGATCT --trim-n -m 40 --max-n=0 -o /home/Public/BioSoft/myutils/smartliu/test_data/test_out/clean_data/test_valid_trim.fastq.gz /home/Public/BioSoft/myutils/smartliu/test_data/test_out/clean_data/test_valid.fastq.gz
+Running on 1 core
+Trimming 2 adapters with at most 10.0% errors in single-end mode ...
+Finished in 0.95 s (548 us/read; 0.11 M reads/minute).
+
+=== Summary ===
+
+Total reads processed:                   1,738
+Reads with adapters:                        75 (4.3%)
+Reads that were too short:                   7 (0.4%)
+Reads with too many N:                       0 (0.0%)
+Reads written (passing filters):         1,731 (99.6%)
+
+Total basepairs processed:       219,691 bp
+Total written (filtered):        218,782 bp (99.6%)
+
+=== Adapter 1 ===
+
+Sequence: AGATCGGAAGAGC; Type: regular 3'; Length: 13; Trimmed: 48 times.
+
+No. of allowed errors:
+0-9 bp: 0; 10-13 bp: 1
+
+Bases preceding removed adapters:
+  A: 27.1%
+  C: 16.7%
+  G: 27.1%
+  T: 29.2%
+  none/other: 0.0%
+
+Overview of removed sequences
+length	count	expect	max.err	error counts
+3	30	27.2	0	30
+4	6	6.8	0	6
+5	4	1.7	0	4
+6	1	0.4	0	1
+7	1	0.1	0	1
+21	1	0.0	1	1
+51	2	0.0	1	1 1
+56	1	0.0	1	1
+85	1	0.0	1	0 1
+120	1	0.0	1	1
+
+=== Adapter 2 ===
+
+Sequence: GCTCTTCCGATCT; Type: regular 3'; Length: 13; Trimmed: 27 times.
+
+No. of allowed errors:
+0-9 bp: 0; 10-13 bp: 1
+
+Bases preceding removed adapters:
+  A: 11.1%
+  C: 14.8%
+  G: 37.0%
+  T: 37.0%
+  none/other: 0.0%
+
+Overview of removed sequences
+length	count	expect	max.err	error counts
+3	19	27.2	0	19
+4	4	6.8	0	4
+5	1	1.7	0	1
+9	1	0.0	0	1
+18	1	0.0	1	1
+83	1	0.0	1	1
+

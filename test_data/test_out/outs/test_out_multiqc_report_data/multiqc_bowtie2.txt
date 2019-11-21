@@ -1,0 +1,2 @@
+Sample	overall_alignment_rate	unpaired_total	unpaired_aligned_one	unpaired_aligned_none	unpaired_aligned_multi	total_reads
+mapping_to_refgene | test	76.89	1731	1302	400	29	1731

@@ -1,0 +1,2 @@
+"Sample"	"Input_reads"	"Mapped_reads"	"Mapping_rate"	"Unique_mapped_reads"	"Unique_mapping_rate"
+"test"	"1731"	"1331"	"0.768919699595609"	"1302"	"0.752166377816291"

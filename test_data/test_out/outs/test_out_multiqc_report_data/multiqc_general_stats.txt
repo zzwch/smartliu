@@ -1,0 +1,6 @@
+Sample	Cutadapt_mqc-generalstats-cutadapt-percent_trimmed	FastQC_mqc-generalstats-fastqc-percent_duplicates	FastQC_mqc-generalstats-fastqc-avg_sequence_length	FastQC_mqc-generalstats-fastqc-total_sequences	FastQC_mqc-generalstats-fastqc-percent_fails	FastQC_mqc-generalstats-fastqc-percent_gc	Bowtie 2_mqc-generalstats-bowtie_2-overall_alignment_rate
+clean_data | test_valid	0.413762967076						
+fastqc | test_1		19.64	150.0	2500.0	27.2727272727	43.0	
+fastqc | test_2		4.6	150.0	2500.0	36.3636363636	31.0	
+fastqc | test_valid_trim		4.85268630849	127.125361063	1731.0	18.1818181818	45.0	
+mapping_to_refgene | test							76.89

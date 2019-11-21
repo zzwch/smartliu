@@ -1,0 +1,56 @@
+A simple command line tool for tag-based scRNA-Seq data analysis.
+smartliu, version 0.3
+2019-05-09 14:37:04,507 - INFO: STEP0 - check parameters
+2019-05-09 14:37:04,507 - INFO:   check INPUT: paired-end fastq files for each sample
+2019-05-09 14:37:04,507 - INFO:     /home/Public/BioSoft/myutils/smartliu/test_data
+2019-05-09 14:37:04,509 - INFO:       test_out
+2019-05-09 14:37:04,509 - INFO:       test
+2019-05-09 14:37:04,509 - INFO:         test_1.fq.gz
+2019-05-09 14:37:04,509 - INFO:         test_2.fq.gz
+2019-05-09 14:37:04,509 - INFO:   check ANALYSIS_STEP: legality
+2019-05-09 14:37:04,509 - INFO:     these analysis will be performed sequentially:quality_contrl, paired2single, clean_reads, read_mapping, gene_quantify, summary_results
+2019-05-09 14:37:04,509 - INFO:   check INDEX existence: refgene
+2019-05-09 14:37:04,528 - INFO:     reference hisat2 INDEX files exists!
+2019-05-09 14:37:04,529 - INFO:   check GTF existence: refgene
+2019-05-09 14:37:04,529 - INFO:     annotation GTF files exists!
+2019-05-09 14:37:04,529 - INFO:   check THREAD: recommended 11.2, maximum 56
+2019-05-09 14:37:04,529 - INFO:     1 threads will be used (1 threads per sample).
+2019-05-09 14:37:04,529 - INFO: STEP0 - END
+2019-05-09 14:37:04,529 - INFO: Samples to be processed:
+test
+2019-05-09 14:37:04,534 - INFO: test >>> proceesing start...
+2019-05-09 14:37:04,535 - INFO: test >>> 0. fastqc: check sequencing quality
+2019-05-09 14:37:22,187 - INFO: test ::: 0. fastqc: finished
+2019-05-09 14:37:22,188 - INFO: test >>> 1. paired2single 
+2019-05-09 14:37:22,337 - INFO: test ::: 1. paired2single: finished
+2019-05-09 14:37:22,338 - INFO: test >>> 2. cutadapt: cleaning data (trim adapter and remove low quality )
+2019-05-09 14:37:23,423 - INFO: test ::: 2. cutadapt: finished
+2019-05-09 14:37:23,423 - INFO: test >>> 3. clean-fastqc: check clean quality 
+2019-05-09 14:37:33,306 - INFO: test ::: 3. clean-fastqc: finished
+2019-05-09 14:37:33,307 - INFO: test >>> 4.1 hisat2: clean reads mapping to reference
+2019-05-09 14:39:38,302 - INFO: test ::: 4.1 hisat2: finished
+2019-05-09 14:39:38,303 - INFO: test >>> 4.2 samtools view: sam to bam
+2019-05-09 14:39:38,331 - INFO: test ::: 4.2 samtools view: finished
+2019-05-09 14:39:38,332 - INFO: test >>> 4.3 samtools sort: sort bam
+2019-05-09 14:39:38,437 - INFO: test ::: 4.3 samtools view: finished
+2019-05-09 14:39:38,437 - INFO: test >>> 4.4 samtools index 
+2019-05-09 14:39:38,463 - INFO: test ::: 4.4 samtools index: finished
+2019-05-09 14:39:38,463 - INFO: test >>> 5.1 htseq-count 
+2019-05-09 14:40:17,734 - INFO: test ::: 5.1 htseq-count: finished
+2019-05-09 14:40:17,734 - INFO: test >>> 5.2 UMI-count 
+2019-05-09 14:40:17,753 - INFO: test ::: 5.2 UMI-count: finished
+2019-05-09 14:40:17,753 - INFO: test >>> 6.1 unmapped reads
+2019-05-09 14:40:17,753 - INFO: test ::: 6.1 unmapped reads: skipped as you wish.
+2019-05-09 14:40:17,755 - INFO: Summary >>> 7 summary results 
+2019-05-09 14:40:17,756 - INFO: Summary >>> 7.1 stat barcodes
+2019-05-09 14:40:19,852 - INFO: Summary ::: 7.1 stat barcodes: finished
+2019-05-09 14:40:19,852 - INFO: Summary >>> 7.2 stat mapping
+2019-05-09 14:40:22,494 - INFO: Summary ::: 7.2 stat mapping: finished
+2019-05-09 14:40:22,494 - INFO: Summary >>> 7.3 stat quantify
+2019-05-09 14:40:52,422 - INFO: Summary ::: 7.3 stat quantify: finished
+2019-05-09 14:40:52,422 - INFO: outs >>> 8.1 multiqc
+2019-05-09 14:40:59,550 - INFO: outs ::: 8.1 outs multiqc: finished
+2019-05-09 14:40:59,550 - INFO: outs >>> 8.2 outs
+2019-05-09 14:41:06,078 - WARNING: outs ::: 8.2 outs skipped, due to nonzero return!
+2019-05-09 14:41:06,078 - WARNING: outs ::: skip outs due to non-zero return?
+2019-05-09 14:41:06,078 - INFO: All DONE. Cheers!

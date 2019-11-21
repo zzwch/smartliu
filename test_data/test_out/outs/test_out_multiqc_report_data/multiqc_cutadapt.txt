@@ -1,0 +1,2 @@
+Sample	r_processed	bp_processed	bp_written	percent_trimmed	r_with_adapters
+clean_data | test_valid	1738	219691	218782	0.413762967076	75

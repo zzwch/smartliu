@@ -1,0 +1,6 @@
+Module	Section	Sample Name	Source
+Cutadapt	all_sections	clean_data | test_valid	/home/Public/BioSoft/myutils/smartliu/test_data/test_out/clean_data/test_valid_trim.log
+FastQC	all_sections	fastqc | test_valid_trim	/home/Public/BioSoft/myutils/smartliu/test_data/test_out/outs/fastqc/test_valid_trim_fastqc.zip
+FastQC	all_sections	fastqc | test_1	/home/Public/BioSoft/myutils/smartliu/test_data/test_out/outs/fastqc/test_1_fastqc.zip
+FastQC	all_sections	fastqc | test_2	/home/Public/BioSoft/myutils/smartliu/test_data/test_out/outs/fastqc/test_2_fastqc.zip
+Bowtie 2	all_sections	mapping_to_refgene | test	/home/Public/BioSoft/myutils/smartliu/test_data/test_out/mapping_to_refgene/test.align_summary.txt

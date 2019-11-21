@@ -54,14 +54,14 @@ def run_per_sample(s, p,cf, logging, mp_thread_per_sample, logpath, perl_paired2
 
     #
     smart_dir = output
-    smart_fastqc_dir = os.path.join(smart_dir, 'fastqc')
+    
     smart_clean_dir = os.path.join(smart_dir, 'clean_data')
     smart_mapping_dir = os.path.join(smart_dir, 'mapping_to_' + cf_opt_ref)
     smart_quantify_dir = os.path.join(smart_mapping_dir, 'count_with_' + cf_opt_gtf)
     
     smart_summary_dir = os.path.join(smart_dir, 'summary')
     smart_outs_dir = os.path.join(smart_dir, 'outs')
-    
+    smart_fastqc_dir = os.path.join(smart_outs_dir, 'fastqc')
     
     print s
     logging.info(s + ' >>> proceesing start...')
@@ -99,6 +99,17 @@ def run_per_sample(s, p,cf, logging, mp_thread_per_sample, logpath, perl_paired2
     s_ret = step(s, '%s -p %s --summary-file %s -x %s -S %s -U %s ' %(cf_tool_hisat2, mp_thread_per_sample, s_summary_mapping, cf.get('reference', cf_opt_ref), s_sam_mapping, s_fq_valid_trim), cf_step_mapping, logging, '4.1 hisat2')
     if (s_ret == None):
         click_exit(logpath)
+    # output sam files is too large and this step is not necessary for most cases.
+    # #4.1 add CB+UB tag for velocyto analysis
+    # s_sam_mapping = os.path.join(smart_mapping_dir, s+'.mapped.sam')
+    # logging.info(s+' >>> 4.1.p Add-Tag: add CB and UB tags to samfiles to support velocyto')
+    # s_ret = add_samtag(s_sam_mapping)
+    # if not s_ret:
+    #     logging.warning(s +' ::: 4.1.p Add-Tag skipped, due to nonzero return!')
+    #     click_exit(logpath)
+    # else:
+    #     logging.info(s + ' ::: 4.1.p Add-Tag: finished') # allright
+        
     # 4.2 samtools view
     s_bam_mapping = os.path.join(smart_mapping_dir, s+'.mapped.bam')
     logging.info(s+' >>> 4.2 samtools view: sam to bam')
@@ -433,7 +444,21 @@ def umi_count(sam, txt, barcodes, ambiguous):
                     uni = '0'
                 line = line + '\t' + uni
             out.write(line + '\n')
-    
+    return True
+# add support for velocyto @20181101
+def add_samtag(sam):
+    with open(sam+'.tag.sam',"w") as out:
+        with open(sam,'r') as alignments:
+            for a in alignments:
+                a = a.strip()
+                if a[0] != "@":
+                    bar = a[0:8]
+                    umi = a[8:16]
+                    a = a + '\tCB:Z:'+bar
+                    a = a + '\tUB:Z:'+umi
+                out.write(a + '\n')
+    os.remove(sam)
+    os.rename(sam+'.tag.sam', sam)
     return True
 
 def get_samples(input, logging):
@@ -575,7 +600,7 @@ def config_check(cf):
     short_help='smartliu')
 @click.option('-c','--config', metavar='CONFIG', nargs=1, required=True,
     #type= click.File(mode='r', encoding=None, errors='strict', lazy=None, atomic=False),
-    help = 'configuration file or short name, such as mm10, mm10.refgene, hg19, hg19.refgene.')
+    help = 'path to configuration file or one of predefined short names (mm10, mm10.refgene, hg19, hg19.refgene).')
 @click.option('-i','--input', metavar='INPUT', nargs=1, required=False, 
     type=click.Path(exists=True, file_okay=False, resolve_path=True),
     help='input data folder. Must contains paired-end fastq files whose name should match the regular expression of `SAMPLE_[rR]?[12].f(ast)?q(.gz)?` (SAMPLE list is included in file specified by -s option)')
@@ -787,22 +812,23 @@ def smart(config, input, sample, output, thread, force):
     #    click_exit(logpath)
     
     smart_dir = output
-    smart_fastqc_dir = os.path.join(smart_dir, 'fastqc')
+    
     smart_clean_dir = os.path.join(smart_dir, 'clean_data')
     smart_mapping_dir = os.path.join(smart_dir, 'mapping_to_' + cf_opt_ref)
     smart_quantify_dir = os.path.join(smart_mapping_dir, 'count_with_' + cf_opt_gtf)
     
     smart_summary_dir = os.path.join(smart_dir, 'summary')
     smart_outs_dir = os.path.join(smart_dir, 'outs')
-
+    smart_fastqc_dir = os.path.join(smart_outs_dir, 'fastqc')
+    
     mymkdir(smart_dir)
-    mymkdir(smart_fastqc_dir)
+    
     mymkdir(smart_clean_dir)
     mymkdir(smart_mapping_dir)
     mymkdir(smart_quantify_dir)
     mymkdir(smart_summary_dir)
     mymkdir(smart_outs_dir)
-
+    mymkdir(smart_fastqc_dir)
     #using multiprocessing to remedy time-consuming fastq barcode-spliting and htseq-count, which can only be run in single thread mode and typically takes 5 hours one sample.
 
     # pool = multiprocessing.Pool(processes=mp_processes)

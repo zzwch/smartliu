@@ -2,11 +2,10 @@ from setuptools import setup
 
 setup(
     name='smartliu',
-    version='0.3',
+    version='20181102',
     py_modules=['smartliu'],
     install_requires=[
         'Click',
-        'biopython',
     ],
     entry_points='''
         [console_scripts]

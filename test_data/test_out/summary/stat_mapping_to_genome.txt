@@ -1,0 +1,2 @@
+"Sample"	"Input_reads"	"Mapped_reads"	"Mapping_rate"	"Unique_mapped_reads"	"Unique_mapping_rate"
+"test"	NA	NA	NA	NA	NA
