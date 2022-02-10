@@ -9,7 +9,9 @@ download this package and unzip it.
 
 2. It is highly recommended to use `conda install your-tool-name` to install dependcies.   
 If you are in China, try to use the local anaconda and bioconda mirrors. It will save your time very much.
-```
+```shell
+# see https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/
+
 $conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
 $conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
 $conda config --set show_channel_urls yes
@@ -56,9 +58,19 @@ $hisat2-build -p 30 --ss transcripts.ss --exon transcripts.exon genome.fa genome
 ```
 
 
+# Depends
+Please use test_data to ensure everything is OK.  eg.   `smartliu -c mm10 -i test_data -o smart_mm10`
 
+!!! You may encountered some errors, follow the log info to install dependented R and Perl packages.
 
-### Usage    
-use `smartliu --help` to see how to start    
-eg.   
-`smartliu -c mm10 -i raw_data -o smart_mm10 -p n_sample`
+```
+ # For JSON.pm used in scripts/paired2single.pl 
+cpanm install JSON
+# For R packages used in scripts/*.R
+r_packages <- ("rjson", "rtracklayer", "mixtools", "ggplot2", "reshape2", "ggthemr", "gridExtra")
+# You may use BiocManager::install(r_packages) to install them
+```
+
+# Usage
+
+Use `smartliu --help` to see how to start    

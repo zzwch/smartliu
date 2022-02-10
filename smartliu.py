@@ -1,5 +1,5 @@
 import click
-import ConfigParser
+import configparser
 import logging
 import os, re  
 import multiprocessing
@@ -63,7 +63,7 @@ def run_per_sample(s, p,cf, logging, mp_thread_per_sample, logpath, perl_paired2
     smart_outs_dir = os.path.join(smart_dir, 'outs')
     smart_fastqc_dir = os.path.join(smart_outs_dir, 'fastqc')
     
-    print s
+    print(s)
     logging.info(s + ' >>> proceesing start...')
     #0. fastqc
     logging.info(s + ' >>> 0. fastqc: check sequencing quality')
@@ -210,7 +210,7 @@ def bestbarcode(tag, barcodes, mismatch):
     # consider allowing mismatch 
     for b in barcodes:
         d = hamming2(tag, b)
-        if d in dist.keys():
+        if d in list(dist.keys()):
             dist[d] = dist[d]+[b]
         else:
             dist[d] = [b]
@@ -225,7 +225,7 @@ def deprecated_paired2single(fq1, fq2, barcodes, mismatch, fq, others, tso, poly
     tso_n = len(tso)
     out1 = gzip.open(fq, 'w')
     out2 = gzip.open(others, 'w')
-    bbcount = dict(zip(barcodes, [[[0 for i in range(mismatch+1)] for j in range(2)] for k in range(len(barcodes))]))
+    bbcount = dict(list(zip(barcodes, [[[0 for i in range(mismatch+1)] for j in range(2)] for k in range(len(barcodes))])))
     bbcount['ambiguous'] = [0 for i in range(2)]
     bbcount['unmatched'] = [0 for j in range(2)]
     
@@ -248,7 +248,7 @@ def deprecated_paired2single(fq1, fq2, barcodes, mismatch, fq, others, tso, poly
                 else:
                     bbcount[bb[1][0]][0][bb[0]] += 1
                     r_flag = 1
-                rr = r1.next()
+                rr = next(r1)
                 # trim tso and polya , and skip read less than 50nt
                 ind_tso = 0
                 ind_polya = len(rr)
@@ -292,7 +292,7 @@ def paired2single(fq1, fq2, barcodes, mismatch, fq, others, tso, polya, min_len)
     tso_n = len(tso)
     out1 = io.BufferedWriter(gzip.open(fq, 'w'), buffer_size = buffer_max)
     out2 = io.BufferedWriter(gzip.open(others, 'w'), buffer_size = buffer_max)
-    bbcount = dict(zip(barcodes, [[[0 for i in range(mismatch+1)] for j in range(2)] for k in range(len(barcodes))]))
+    bbcount = dict(list(zip(barcodes, [[[0 for i in range(mismatch+1)] for j in range(2)] for k in range(len(barcodes))])))
     #bbcount['ambiguous'] = [0 for i in range(2)]
     bbcount['unmatched'] = [0 for j in range(2)]
     
@@ -304,7 +304,7 @@ def paired2single(fq1, fq2, barcodes, mismatch, fq, others, tso, polya, min_len)
             r2 = FastqGeneralIterator(in2)
             buffer_i = 0
             for r in r2:
-                rr = r1.next()
+                rr = next(r1)
                 
                 tag = r[1][0:8]
                 isbar_flag = False
@@ -370,7 +370,7 @@ def mismatch_dict(barcodes, mismatch):
                             bar_mis = bar[0:i] + b1 + bar[i+1:j] + b2 +bar[j+1:]
                             barcodes_mis_dict[bar_mis] = (hamming2(bar_mis, bar), bar)
         else:
-            print 'mismatch should be less than 3 when matching 8bp barcodes!'
+            print('mismatch should be less than 3 when matching 8bp barcodes!')
             exit()
     return barcodes_mis_dict
    
@@ -382,6 +382,8 @@ def umi_count(sam, txt, barcodes, ambiguous):
     umimat = {}
     with open(sam,'r') as alignments:
         for a in alignments:
+            if a[0] == "@": # skip header lines. For new version of htseq-count
+                continue
             bar = a[0:8]
             asplit = a.split('\t')
             
@@ -421,7 +423,7 @@ def umi_count(sam, txt, barcodes, ambiguous):
                     umimat[g][bar][umi] = 0
                 umimat[g][bar][umi] += 1
 
-    genes=umimat.keys()
+    genes=list(umimat.keys())
     with open(txt,"w") as out:
         for gene in sorted(genes):
             line = gene
@@ -433,7 +435,7 @@ def umi_count(sam, txt, barcodes, ambiguous):
                 line = line + '\t' + uni
             out.write(line + '\n')
             
-    mapflags=mapmat.keys()
+    mapflags=list(mapmat.keys())
     with open(sam+'.flagstat',"w") as out:
         for mapflag in sorted(mapflags):
             line = 'flag_'+str(mapflag)
@@ -508,7 +510,7 @@ def get_samples(input, logging):
                 s_fastq2[s_re2.group(1)] = s_file
         logging.info(' '*6 + s)
         for s_fastq in list(set(s_fastq1.keys()).intersection(set(s_fastq2.keys()))):
-            if (s in sampleinfos.keys()):
+            if (s in list(sampleinfos.keys())):
                 sampleinfos[s][0].append(os.path.join(s_path, s_fastq1[s_fastq]))
                 sampleinfos[s][1].append(os.path.join(s_path, s_fastq2[s_fastq]))
             else:
@@ -517,7 +519,7 @@ def get_samples(input, logging):
             logging.info(' '*8 + s_fastq2[s_fastq])
     for f_fastq in list(set(f_fastq1.keys()).intersection(set(f_fastq2.keys()))):
         logging.info(' '*6 + f_fastq)
-        if (f_fastq in sampleinfos.keys()):
+        if (f_fastq in list(sampleinfos.keys())):
             click.echo('sample names is duplicated!')
             exit()
             #sampleinfos[f_fastq][0].append(f_fastq1[f_fastq])
@@ -556,7 +558,7 @@ def config_check(cf):
                'annotation'    : [],
                'tools'         : ['fastqc', 'cutadapt', 'hisat2', 'samtools', 'htseq-count', 'bam2fastx', 'bamtools', "rscript", 'perl']}
     #Check OPTIONS
-    for sec in sec_opt.keys():
+    for sec in list(sec_opt.keys()):
         opt = sec_opt[sec]
         if(sec == 'reference'):
             if(cf.getboolean('execute_steps', 'read_mapping')):
@@ -641,7 +643,7 @@ def smart(config, input, sample, output, thread, force):
     myconfigs = os.listdir(os.path.join(py_path, 'configs'))
     if(config+'.config' in myconfigs):
         config = os.path.join(py_path,'configs', config+'.config')
-    cf = ConfigParser.ConfigParser()
+    cf = configparser.ConfigParser()
     cf.read(config)
     # override config options using command line options
     if(input):
@@ -746,7 +748,7 @@ def smart(config, input, sample, output, thread, force):
             logging.info('Check your SAMPLE file, inexisitent samples: '+ ', '.join(pseudo_sample) + '.')
             click_exit(logpath)
         else:
-            sampleinfos = {key:value for key,value in sampleinfos.items() if key in samples}
+            sampleinfos = {key:value for key,value in list(sampleinfos.items()) if key in samples}
     # check steps 
     logging.info(' '*2 + 'check ANALYSIS_STEP: legality')
     cf_steps_bool = [cf_step_qc, cf_step_single, cf_step_clean, cf_step_mapping, cf_step_quantify, cf_step_remapping, cf_step_requantify, cf_step_summary]
@@ -788,7 +790,7 @@ def smart(config, input, sample, output, thread, force):
     
     # check threads
     # assign threads 
-    mp_processes = len(sampleinfos.keys())
+    mp_processes = len(list(sampleinfos.keys()))
     mp_thread_per_sample = cf_opt_thread/mp_processes
     while mp_thread_per_sample < 1:
         mp_processes = mp_processes/2
@@ -805,7 +807,7 @@ def smart(config, input, sample, output, thread, force):
     logging.info('STEP0 - END')
     
     ############################
-    logging.info('Samples to be processed:\n' + ','.join(sampleinfos.keys()))
+    logging.info('Samples to be processed:\n' + ','.join(list(sampleinfos.keys())))
     #ret = os.symlink(input, os.path.join(output, 'rawdata'))
     #if(ret !=0 ):
     #    logging.warning('cannot create the link of input in the output dir!')
@@ -838,12 +840,12 @@ def smart(config, input, sample, output, thread, force):
     # pool.close()
     # pool.join()
     mp = {}
-    for s,p in sampleinfos.items():
+    for s,p in list(sampleinfos.items()):
         while(len(multiprocessing.active_children()) > mp_processes-1):
             time.sleep(10)
         mp[s] = multiprocessing.Process(target=run_per_sample, args=(s, p, cf,logging, mp_thread_per_sample, logpath, perl_paired2single, barcodes))
         mp[s].start()
-    for m in mp.values():
+    for m in list(mp.values()):
         m.join()
     # summary results
     if cf_step_summary:
@@ -856,17 +858,17 @@ def smart(config, input, sample, output, thread, force):
         rscript_requantify = os.path.join(py_path, 'scripts','stat_requantify.R')
         rscript_outs = os.path.join(py_path, 'scripts','stat_outs.R')
         logging.info(s+' >>> 7.1 stat barcodes')
-        ret = step(s,'%s %s %s %s %s %s' %(rscript, rscript_barcode, smart_summary_dir, smart_clean_dir, ','.join(sampleinfos.keys()), ','.join(barcodes)), True, logging, '7.1 stat barcodes')
+        ret = step(s,'%s %s %s %s %s %s' %(rscript, rscript_barcode, smart_summary_dir, smart_clean_dir, ','.join(list(sampleinfos.keys())), ','.join(barcodes)), True, logging, '7.1 stat barcodes')
         if ret ==None:
             logging.warning(s +' ::: skip stat_barcodes due to non-zero return?')
             #click_exit(logpath)
         logging.info(s+' >>> 7.2 stat mapping')
-        ret = step(s,'%s %s %s %s %s' %(rscript, rscript_mapping, smart_summary_dir, smart_mapping_dir, ','.join(sampleinfos.keys())), True, logging, '7.2 stat mapping')
+        ret = step(s,'%s %s %s %s %s' %(rscript, rscript_mapping, smart_summary_dir, smart_mapping_dir, ','.join(list(sampleinfos.keys()))), True, logging, '7.2 stat mapping')
         if ret ==None:
             logging.warning(s +' ::: skip stat_mapping due to non-zero return?')
             #click_exit(logpath)
         logging.info(s+' >>> 7.3 stat quantify')
-        ret = step(s,'%s %s %s %s %s %s' %(rscript, rscript_quantify, smart_summary_dir, smart_quantify_dir, ','.join(sampleinfos.keys()), cf.get('annotation', cf_opt_gtf)), True, logging, '7.3 stat quantify')
+        ret = step(s,'%s %s %s %s %s %s' %(rscript, rscript_quantify, smart_summary_dir, smart_quantify_dir, ','.join(list(sampleinfos.keys())), cf.get('annotation', cf_opt_gtf)), True, logging, '7.3 stat quantify')
         if ret ==None:
             logging.warning(s +' ::: skip stat_quantify due to non-zero return?')
             #click_exit(logpath)
@@ -875,12 +877,12 @@ def smart(config, input, sample, output, thread, force):
                 s_reref = cf_opt_reref[i]
                 s_regtf = cf_opt_regtf[i]
                 logging.info(s+' >>> 7.4 stat remapping')
-                ret = step(s,'%s %s %s %s %s %s' %(rscript, rscript_remapping, smart_summary_dir, smart_mapping_dir, ','.join(sampleinfos.keys()), s_reref), True, logging, '7.4 stat remapping')
+                ret = step(s,'%s %s %s %s %s %s' %(rscript, rscript_remapping, smart_summary_dir, smart_mapping_dir, ','.join(list(sampleinfos.keys())), s_reref), True, logging, '7.4 stat remapping')
                 if ret ==None:
                     logging.warning(s +' ::: skip stat_remapping due to non-zero return?')
                     #click_exit(logpath)
                 logging.info(s+' >>> 7.5 stat requantify')
-                ret = step(s,'%s %s %s %s %s %s %s' %(rscript, rscript_requantify, smart_summary_dir, smart_mapping_dir, ','.join(sampleinfos.keys()), cf.get('annotation', s_regtf), s_regtf), True, logging, '7.5 stat requantify')
+                ret = step(s,'%s %s %s %s %s %s %s' %(rscript, rscript_requantify, smart_summary_dir, smart_mapping_dir, ','.join(list(sampleinfos.keys())), cf.get('annotation', s_regtf), s_regtf), True, logging, '7.5 stat requantify')
                 if ret ==None:
                     logging.warning(s +' ::: skip stat_requantify due to non-zero return?')
                     #click_exit(logpath)
